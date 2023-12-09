@@ -106,6 +106,7 @@ func (p *Password) Prompt(config *PromptConfig) (interface{}, error) {
 
 		break
 	}
+	p.AppendRenderedText(strings.Repeat(string(config.HideCharacter), len(p.answer)))
 	cursor.PreviousLine(1)
 	return p.answer, err
 }
