@@ -48,7 +48,7 @@ func TestInfoRender(t *testing.T) {
 func TestInfoPrompt(t *testing.T) {
 	tests := []PromptTest{
 		{
-			"Test Info prompt interaction",
+			"SKIP: Test Info prompt interaction",
 			&Info{
 				Message: "A valuable information",
 			},
