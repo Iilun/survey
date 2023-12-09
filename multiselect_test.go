@@ -707,7 +707,7 @@ func TestMultiSelectPrompt(t *testing.T) {
 				c.ExpectEOF()
 			},
 			[]core.OptionAnswer{
-				{Value: "Monday", Index: 2},
+				{Value: "Monday", Index: 1},
 			},
 		},
 	}
