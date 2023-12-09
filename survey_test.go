@@ -404,7 +404,7 @@ func TestAsk(t *testing.T) {
 
 func TestAsk_returnsErrorIfTargetIsNil(t *testing.T) {
 	// pass an empty place to leave the answers
-	err := Ask([]*Question{}, nil)
+	err := Ask([]*Question{{Prompt: &Input{Message: "Test"}}}, nil)
 
 	// if we didn't get an error
 	if err == nil {
