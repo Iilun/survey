@@ -55,7 +55,7 @@ func TestInfoPrompt(t *testing.T) {
 				c.ExpectString("A valuable information")
 				c.ExpectEOF()
 			},
-			"",
+			nil,
 		},
 	}
 

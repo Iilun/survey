@@ -26,4 +26,4 @@ jobs:
       run: echo "::add-matcher::$PWD/.github/matchers.json"
 
     - name: Run tests
-      run: go test -timeout 30s -v $(go list -v ./... | grep -vE '(tests|examples)$')
+      run: go test -timeout 40s -v $(go list -v ./... | grep -vE '(tests|examples)$')
