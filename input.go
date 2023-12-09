@@ -2,7 +2,7 @@ package survey
 
 import (
 	"errors"
-
+	"fmt"
 	"github.com/Iilun/survey/v2/core"
 	"github.com/Iilun/survey/v2/terminal"
 )
@@ -65,6 +65,8 @@ var InputQuestionTemplate = `
 func (i *Input) onRune(config *PromptConfig) terminal.OnRuneFn {
 	return terminal.OnRuneFn(func(key rune, line []rune) ([]rune, bool, error) {
 		if i.options != nil && (key == terminal.KeyEnter || key == '\n') {
+			// Add a new line because it is expected later - only when a suggestion is selected
+			fmt.Println()
 			return []rune(i.answer), true, nil
 		} else if i.options != nil && key == terminal.KeyEscape {
 			i.answer = i.typedAnswer
