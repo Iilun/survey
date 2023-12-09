@@ -4,11 +4,7 @@
 
 A library for building interactive and accessible prompts on terminals supporting ANSI escape sequences.
 
-This project is a fork from https://github.com/AlecAivazis/survey which is no longer maintained
-
-
-<img width="550" src="https://thumbs.gfycat.com/VillainousGraciousKouprey-size_restricted.gif"/>
-
+This project is a fork from [AlecAivazis work](https://github.com/AlecAivazis/survey) which is no longer maintained.
 
 ```go
 package main
@@ -104,7 +100,7 @@ survey.Ask(questions, &answers, survey.WithValidator(survey.Required))
 
 ### Input
 
-<img src="https://thumbs.gfycat.com/LankyBlindAmericanpainthorse-size_restricted.gif" width="400px"/>
+![Example](img/input.gif)
 
 ```golang
 name := ""
@@ -116,7 +112,7 @@ survey.AskOne(prompt, &name)
 
 #### Suggestion Options
 
-<img src="https://i.imgur.com/Q7POpA1.gif" width="800px"/>
+![Example](img/input-with-suggestions.gif)
 
 ```golang
 file := ""
@@ -132,31 +128,31 @@ survey.AskOne(prompt, &file)
 
 ### Multiline
 
-<img src="https://thumbs.gfycat.com/ImperfectShimmeringBeagle-size_restricted.gif" width="400px"/>
+![Example](img/multiline.gif)
 
 ```golang
 text := ""
 prompt := &survey.Multiline{
-    Message: "ping",
+    Message: "What is your mood today?",
 }
 survey.AskOne(prompt, &text)
 ```
 
 ### Password
 
-<img src="https://thumbs.gfycat.com/CompassionateSevereHypacrosaurus-size_restricted.gif" width="400px" />
+![Example](img/password.gif)
 
 ```golang
 password := ""
 prompt := &survey.Password{
-    Message: "Please type your password",
+    Message: "Please type your password:",
 }
 survey.AskOne(prompt, &password)
 ```
 
 ### Confirm
 
-<img src="https://thumbs.gfycat.com/UnkemptCarefulGermanpinscher-size_restricted.gif" width="400px"/>
+![Example](img/confirm.gif)
 
 ```golang
 name := false
@@ -168,7 +164,7 @@ survey.AskOne(prompt, &name)
 
 ### Select
 
-<img src="https://thumbs.gfycat.com/GrimFilthyAmazonparrot-size_restricted.gif" width="450px"/>
+![Example](img/select.gif)
 
 ```golang
 color := ""
@@ -268,7 +264,7 @@ survey.AskOne(prompt, &content)
 
 ### Info
 
-This is not an input, but allows you to simply display a nicely formatted message to pass an info. No data is sent back (nil)
+![Example](img/info.gif)
 
 ```golang
 prompt := &survey.Info{
@@ -277,6 +273,8 @@ prompt := &survey.Info{
 
 survey.AskOne(prompt, nil)
 ```
+
+This is not an input, but allows you to simply display a nicely formatted message to pass an info. No data is sent back (nil)
 
 ## Filtering Options
 
