@@ -9,7 +9,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/AlecAivazis/survey/v2/core"
-	"github.com/AlecAivazis/survey/v2/internal/log"
 	"github.com/AlecAivazis/survey/v2/terminal"
 )
 
@@ -364,7 +363,6 @@ func Ask(qs []*Question, response interface{}, opts ...AskOpt) error {
 			if promptAgainer, ok := q.Prompt.(PromptAgainer); ok && validationErr != nil {
 				ans, err = promptAgainer.PromptAgain(&options.PromptConfig, ans, validationErr)
 			} else {
-				log.Printf("Prompt() field: %s", q.Name)
 				ans, err = q.Prompt.Prompt(&options.PromptConfig)
 			}
 			if err != nil {
@@ -386,7 +384,6 @@ func Ask(qs []*Question, response interface{}, opts ...AskOpt) error {
 		}
 
 		// tell the prompt to cleanup with the validated value
-		log.Printf("Prompt cleanup for %q", q.Name)
 		if err := q.Prompt.Cleanup(&options.PromptConfig, ans); err != nil {
 			return err
 		}

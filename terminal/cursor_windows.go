@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"syscall"
 	"unsafe"
-
-	"github.com/AlecAivazis/survey/v2/internal/log"
 )
 
 var COORDINATE_SYSTEM_BEGIN Short = 0
@@ -65,7 +63,6 @@ func (c *Cursor) cursorMove(x int, y int, xIsAbs bool) error {
 
 	var csbi consoleScreenBufferInfo
 	if _, _, err := procGetConsoleScreenBufferInfo.Call(uintptr(handle), uintptr(unsafe.Pointer(&csbi))); normalizeError(err) != nil {
-		log.Printf("cursorMove READ ERROR: %v", err)
 		return err
 	}
 
@@ -77,15 +74,8 @@ func (c *Cursor) cursorMove(x int, y int, xIsAbs bool) error {
 	}
 	cursor.Y = csbi.cursorPosition.Y + Short(y)
 
-	xAbsLabel := ""
-	if xIsAbs {
-		xAbsLabel = " (abs)"
-	}
-	log.Printf("cursorMove X:%d%s Y:%d => %d, %d", x, xAbsLabel, y, cursor.X, cursor.Y)
-
 	_, _, err := procSetConsoleCursorPosition.Call(uintptr(handle), uintptr(*(*int32)(unsafe.Pointer(&cursor))))
 	if normalizeError(err) != nil {
-		log.Printf("cursorMove WRITE ERROR: %v", err)
 		return err
 	}
 	return nil
