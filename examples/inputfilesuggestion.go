@@ -1,4 +1,5 @@
 //go:build ignore
+// +build ignore
 
 package main
 
@@ -6,7 +7,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/AlecAivazis/survey/v2"
+	"github.com/Iilun/survey/v2"
 )
 
 func suggestFiles(toComplete string) []string {

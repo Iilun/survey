@@ -1,11 +1,12 @@
 //go:build ignore
+// +build ignore
 
 package main
 
 import (
 	"fmt"
 
-	"github.com/AlecAivazis/survey/v2"
+	"github.com/Iilun/survey/v2"
 )
 
 type Meal struct {
