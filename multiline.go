@@ -1,9 +1,9 @@
 package survey
 
 import (
-	"strings"
-
 	"github.com/Iilun/survey/v2/terminal"
+	"math"
+	"strings"
 )
 
 type Multiline struct {
@@ -32,7 +32,7 @@ var MultilineQuestionTemplate = `
   {{- if .Answer }}{{ "\n" }}{{ end }}
 {{- else }}
   {{- if .Default}}{{color "white"}}({{.Default}}) {{color "reset"}}{{end}}
-  {{- color "cyan"}}[Enter 2 empty lines to finish]{{color "reset"}}
+  {{- color "cyan"}}[Enter 2 empty lines to finish]{{color "reset"}}{{ "\n" }}
 {{- end}}`
 
 func (i *Multiline) Prompt(config *PromptConfig) (interface{}, error) {
@@ -70,7 +70,9 @@ func (i *Multiline) Prompt(config *PromptConfig) (interface{}, error) {
 
 		if string(line) == "" {
 			if emptyOnce {
-				numLines := len(multiline) + 2
+				// Go up the length of multilines + 1 (contains the previous newline) for small inputs
+				// For inputs with more than 3 lines, only erase the 1
+				numLines := int(math.Min(3, float64(len(multiline))+1))
 				cursor.PreviousLine(numLines)
 				for j := 0; j < numLines; j++ {
 					terminal.EraseLine(i.Stdio().Out, terminal.ERASE_LINE_ALL)
