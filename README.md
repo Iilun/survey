@@ -100,7 +100,7 @@ survey.Ask(questions, &answers, survey.WithValidator(survey.Required))
 
 ### Input
 
-![Example](img/input.gif)
+<img src="img/input.gif" alt="Basic input demonstration" width="100%">
 
 ```golang
 name := ""
@@ -112,7 +112,7 @@ survey.AskOne(prompt, &name)
 
 #### Suggestion Options
 
-![Example](img/input-with-suggestions.gif)
+<img src="img/input-with-suggestions.gif" alt="Input with suggestions demonstration" width="100%">
 
 ```golang
 file := ""
@@ -128,7 +128,7 @@ survey.AskOne(prompt, &file)
 
 ### Multiline
 
-![Example](img/multiline.gif)
+<img src="img/multiline.gif" alt="Multiline input demonstration" width="100%">
 
 ```golang
 text := ""
@@ -140,7 +140,7 @@ survey.AskOne(prompt, &text)
 
 ### Password
 
-![Example](img/password.gif)
+<img src="img/password.gif" alt="Password input demonstration" width="100%">
 
 ```golang
 password := ""
@@ -152,7 +152,7 @@ survey.AskOne(prompt, &password)
 
 ### Confirm
 
-![Example](img/confirm.gif)
+<img src="img/confirm.gif" alt="Confirm input demonstration" width="100%">
 
 ```golang
 name := false
@@ -164,7 +164,7 @@ survey.AskOne(prompt, &name)
 
 ### Select
 
-![Example](img/select.gif)
+<img src="img/select.gif" alt="Select input demonstration" width="100%">
 
 ```golang
 color := ""
@@ -216,7 +216,7 @@ fmt.Println(color) //=> "red"
 
 ### MultiSelect
 
-![Example](img/multi-select-all-none.gif)
+<img src="img/multi-select-all-none.gif" alt="Multiselect input demonstration" width="100%">
 
 ```golang
 days := []string{}
@@ -264,7 +264,7 @@ survey.AskOne(prompt, &content)
 
 ### Info
 
-![Example](img/info.gif)
+<img src="img/info.gif" alt="Info display demonstration" width="100%">
 
 ```golang
 prompt := &survey.Info{
