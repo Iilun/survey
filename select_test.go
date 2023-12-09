@@ -408,7 +408,7 @@ func TestSelectPrompt(t *testing.T) {
 				c.SendLine(string(terminal.KeyArrowDown))
 				c.ExpectEOF()
 			},
-			core.OptionAnswer{Index: 2, Value: "blue"},
+			core.OptionAnswer{Index: 1, Value: "blue"},
 		},
 	}
 
