@@ -27,7 +27,6 @@ type MultiSelect struct {
 	Help          string
 	PageSize      int
 	VimMode       bool
-	DisableFilter bool
 	FilterMessage string
 	Filter        func(filter string, value string, index int) bool
 	Description   func(value string, index int) string
@@ -81,7 +80,7 @@ var MultiSelectQuestionTemplate = `
 {{- color "default+hb"}}{{ .Message }}{{ .FilterMessage }}{{color "reset"}}
 {{- if .ShowAnswer}}{{color "cyan"}} {{.Answer}}{{color "reset"}}{{"\n"}}
 {{- else }}
-	{{- "  "}}{{- color "cyan"}}[Use arrows to move, space to select,{{- if not .Config.RemoveSelectAll }} <right> to all,{{end}}{{- if not .Config.RemoveSelectNone }} <left> to none{{end}}{{- if not .DisableFilter}}, type to filter{{end}}{{- if and .Help (not .ShowHelp)}}, {{ .Config.HelpInput }} for more help{{end}}]{{color "reset"}}
+	{{- "  "}}{{- color "cyan"}}[Use arrows to move, space to select,{{- if not .Config.RemoveSelectAll }} <right> to all,{{end}}{{- if not .Config.RemoveSelectNone }} <left> to none{{end}}{{- if not .Config.DisableFilter}}, type to filter{{end}}{{- if and .Help (not .ShowHelp)}}, {{ .Config.HelpInput }} for more help{{end}}]{{color "reset"}}
   {{- "\n"}}
   {{- range $ix, $option := .PageEntries}}
     {{- template "option" $.IterateOption $ix $option}}
@@ -141,7 +140,7 @@ func (m *MultiSelect) OnChange(key rune, config *PromptConfig) {
 			runeFilter := []rune(m.filter)
 			m.filter = string(runeFilter[0 : len(runeFilter)-1])
 		}
-	} else if key >= terminal.KeySpace && !m.DisableFilter {
+	} else if key >= terminal.KeySpace && !config.DisableFilter {
 		m.filter += string(key)
 		m.VimMode = false
 	} else if !config.RemoveSelectAll && key == terminal.KeyArrowRight {
@@ -202,8 +201,8 @@ func (m *MultiSelect) filterOptions(config *PromptConfig) []core.OptionAnswer {
 	// the filtered list
 	answers := []core.OptionAnswer{}
 
-	// if there is no filter applied
-	if m.filter == "" {
+	// if there is no filter applied or it is disabled
+	if m.filter == "" || config.DisableFilter {
 		// return all of the options
 		return core.OptionAnswerList(m.Options)
 	}
