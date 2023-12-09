@@ -2,6 +2,7 @@ package survey
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/Iilun/survey/v2/core"
@@ -59,9 +60,12 @@ func TestInfoPrompt(t *testing.T) {
 			nil,
 		},
 	}
-
 	for _, test := range tests {
+		testName := strings.TrimPrefix(test.name, "SKIP: ")
 		t.Run(test.name, func(t *testing.T) {
+			if testName != test.name {
+				t.Skipf("warning: flakey test %q", testName)
+			}
 			RunPromptTest(t, test)
 		})
 	}
