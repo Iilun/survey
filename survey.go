@@ -126,6 +126,7 @@ type PromptConfig struct {
 	Filter           func(filter string, option string, index int) bool
 	KeepFilter       bool
 	ShowCursor       bool
+	DisableFilter    bool
 	RemoveSelectAll  bool
 	RemoveSelectNone bool
 	HideCharacter    rune
@@ -171,6 +172,15 @@ func WithFilter(filter func(filter string, value string, index int) (include boo
 		// save the filter internally
 		options.PromptConfig.Filter = filter
 
+		return nil
+	}
+}
+
+// WithDisableFilter specifies disables the filter behavior.
+func WithDisableFilter() AskOpt {
+	return func(options *AskOptions) error {
+		// save the boolean internally
+		options.PromptConfig.DisableFilter = true
 		return nil
 	}
 }

@@ -31,14 +31,16 @@ func TestSelectRender(t *testing.T) {
 	helpfulPrompt.Help = "This is helpful"
 
 	tests := []struct {
-		title    string
-		prompt   Select
-		data     SelectTemplateData
-		expected string
+		title        string
+		prompt       Select
+		promptOption AskOpt
+		data         SelectTemplateData
+		expected     string
 	}{
 		{
 			"Test Select question output",
 			prompt,
+			nil,
 			SelectTemplateData{SelectedIndex: 2, PageEntries: core.OptionAnswerList(prompt.Options)},
 			strings.Join(
 				[]string{
@@ -54,12 +56,14 @@ func TestSelectRender(t *testing.T) {
 		{
 			"Test Select answer output",
 			prompt,
+			nil,
 			SelectTemplateData{Answer: "buz", ShowAnswer: true, PageEntries: core.OptionAnswerList(prompt.Options)},
 			fmt.Sprintf("%s Pick your word: buz\n", defaultIcons().Question.Text),
 		},
 		{
 			"Test Select question output with help hidden",
 			helpfulPrompt,
+			nil,
 			SelectTemplateData{SelectedIndex: 2, PageEntries: core.OptionAnswerList(prompt.Options)},
 			strings.Join(
 				[]string{
@@ -75,6 +79,7 @@ func TestSelectRender(t *testing.T) {
 		{
 			"Test Select question output with help shown",
 			helpfulPrompt,
+			nil,
 			SelectTemplateData{SelectedIndex: 2, ShowHelp: true, PageEntries: core.OptionAnswerList(prompt.Options)},
 			strings.Join(
 				[]string{
@@ -88,6 +93,29 @@ func TestSelectRender(t *testing.T) {
 				"\n",
 			),
 		},
+		{
+			"Test Select question output with filter disabled",
+			prompt,
+			WithDisableFilter(),
+			SelectTemplateData{SelectedIndex: 2, PageEntries: core.OptionAnswerList(prompt.Options)},
+			strings.Join(
+				[]string{
+					fmt.Sprintf("%s Pick your word:  [Use arrows to move]", defaultIcons().Question.Text),
+					"  foo",
+					"  bar",
+					fmt.Sprintf("%s baz", defaultIcons().SelectFocus.Text),
+					"  buz\n",
+				},
+				"\n",
+			),
+		},
+		{
+			"Test Select answer output with filter disabled",
+			prompt,
+			WithDisableFilter(),
+			SelectTemplateData{Answer: "buz", ShowAnswer: true, PageEntries: core.OptionAnswerList(prompt.Options)},
+			fmt.Sprintf("%s Pick your word: buz\n", defaultIcons().Question.Text),
+		},
 	}
 
 	for _, test := range tests {
@@ -98,8 +126,13 @@ func TestSelectRender(t *testing.T) {
 			test.prompt.WithStdio(terminal.Stdio{Out: w})
 			test.data.Select = test.prompt
 
+			options := defaultAskOptions()
+			if test.promptOption != nil {
+				err = test.promptOption(options)
+				assert.NoError(t, err)
+			}
 			// set the icon set
-			test.data.Config = defaultPromptConfig()
+			test.data.Config = &options.PromptConfig
 
 			err = test.prompt.Render(
 				SelectQuestionTemplate,
@@ -125,10 +158,11 @@ func TestSelectPrompt(t *testing.T) {
 				Message: "Choose a color:",
 				Options: []string{"red", "blue", "green"},
 			},
+			nil,
 			func(c expectConsole) {
 				c.ExpectString("Choose a color:")
-				// Select blue.
 				c.SendLine(string(terminal.KeyArrowDown))
+				// Select blue.
 				c.ExpectEOF()
 			},
 			core.OptionAnswer{Index: 1, Value: "blue"},
@@ -139,6 +173,7 @@ func TestSelectPrompt(t *testing.T) {
 				Message: "Choose a color:",
 				Options: []string{"red", "blue", "green"},
 			},
+			nil,
 			func(c expectConsole) {
 				c.ExpectString("Choose a color:")
 				// Select blue.
@@ -156,6 +191,7 @@ func TestSelectPrompt(t *testing.T) {
 				Options: []string{"red", "blue", "green"},
 				Default: "green",
 			},
+			nil,
 			func(c expectConsole) {
 				c.ExpectString("Choose a color:")
 				// Select green.
@@ -171,6 +207,7 @@ func TestSelectPrompt(t *testing.T) {
 				Options: []string{"red", "blue", "green"},
 				Default: 2,
 			},
+			nil,
 			func(c expectConsole) {
 				c.ExpectString("Choose a color:")
 				// Select green.
@@ -186,6 +223,7 @@ func TestSelectPrompt(t *testing.T) {
 				Options: []string{"red", "blue", "green"},
 				Default: "blue",
 			},
+			nil,
 			func(c expectConsole) {
 				c.ExpectString("Choose a color:")
 				// Select red.
@@ -201,6 +239,7 @@ func TestSelectPrompt(t *testing.T) {
 				Options: []string{"red", "blue", "green"},
 				Help:    "My favourite color is red",
 			},
+			nil,
 			func(c expectConsole) {
 				c.ExpectString("Choose a color:")
 				c.SendLine("?")
@@ -218,6 +257,7 @@ func TestSelectPrompt(t *testing.T) {
 				Options:  []string{"red", "blue", "green"},
 				PageSize: 1,
 			},
+			nil,
 			func(c expectConsole) {
 				c.ExpectString("Choose a color:")
 				// Select green.
@@ -233,6 +273,7 @@ func TestSelectPrompt(t *testing.T) {
 				Options: []string{"red", "blue", "green"},
 				VimMode: true,
 			},
+			nil,
 			func(c expectConsole) {
 				c.ExpectString("Choose a color:")
 				// Select blue.
@@ -242,27 +283,12 @@ func TestSelectPrompt(t *testing.T) {
 			core.OptionAnswer{Index: 1, Value: "blue"},
 		},
 		{
-			"filter",
-			&Select{
-				Message: "Choose a color:",
-				Options: []string{"red", "blue", "green"},
-			},
-			func(c expectConsole) {
-				c.ExpectString("Choose a color:")
-				// Filter down to red and green.
-				c.Send("re")
-				// Select green.
-				c.SendLine(string(terminal.KeyArrowDown))
-				c.ExpectEOF()
-			},
-			core.OptionAnswer{Index: 2, Value: "green"},
-		},
-		{
 			"filter is case-insensitive",
 			&Select{
 				Message: "Choose a color:",
 				Options: []string{"red", "blue", "green"},
 			},
+			nil,
 			func(c expectConsole) {
 				c.ExpectString("Choose a color:")
 				// Filter down to red and green.
@@ -280,6 +306,7 @@ func TestSelectPrompt(t *testing.T) {
 				Options: []string{"red", "blue", "green"},
 				Default: "blue",
 			},
+			nil,
 			func(c expectConsole) {
 				c.ExpectString("Choose a color:")
 				// Make sure only red is showing
@@ -297,6 +324,7 @@ func TestSelectPrompt(t *testing.T) {
 					return len(optValue) >= 5
 				},
 			},
+			nil,
 			func(c expectConsole) {
 				c.ExpectString("Choose a color:")
 				// Filter down to only green since custom filter only keeps options that are longer than 5 runes
@@ -311,6 +339,7 @@ func TestSelectPrompt(t *testing.T) {
 				Message: "Choose a color:",
 				Options: []string{"red", "blue", "green"},
 			},
+			nil,
 			func(c expectConsole) {
 				c.ExpectString("Choose a color:")
 				// filter away everything
@@ -332,6 +361,7 @@ func TestSelectPrompt(t *testing.T) {
 				Message: "Choose a color:",
 				Options: []string{"red", "blue", "black"},
 			},
+			nil,
 			func(c expectConsole) {
 				c.ExpectString("Choose a color:")
 				// Filter down to blue.
@@ -350,6 +380,7 @@ func TestSelectPrompt(t *testing.T) {
 				Message: "今天中午吃什么？",
 				Options: []string{"青椒牛肉丝", "小炒肉", "小煎鸡"},
 			},
+			nil,
 			func(c expectConsole) {
 				c.ExpectString("今天中午吃什么？")
 				// Filter down to 小炒肉.
@@ -361,6 +392,23 @@ func TestSelectPrompt(t *testing.T) {
 				c.ExpectEOF()
 			},
 			core.OptionAnswer{Index: 2, Value: "小煎鸡"},
+		},
+		{
+			"Disable filter disables user input",
+			&Select{
+				Message: "Choose a color:",
+				Options: []string{"red", "blue", "green"},
+			},
+			[]AskOpt{WithDisableFilter()},
+			func(c expectConsole) {
+				c.ExpectString("Choose a color:")
+				// Filter down to red and green.
+				c.Send("RE")
+				// Select green.
+				c.SendLine(string(terminal.KeyArrowDown))
+				c.ExpectEOF()
+			},
+			core.OptionAnswer{Index: 1, Value: "blue"},
 		},
 	}
 
