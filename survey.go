@@ -25,6 +25,10 @@ func defaultAskOptions() *AskOptions {
 			HelpInput:    "?",
 			SuggestInput: "tab",
 			Icons: IconSet{
+				Info: Icon{
+					Text:   "#",
+					Format: "blue+hb",
+				},
 				Error: Icon{
 					Text:   "X",
 					Format: "red",
@@ -84,6 +88,7 @@ type Icon struct {
 // IconSet holds the icons to use for various prompts
 type IconSet struct {
 	HelpInput      Icon
+	Info           Icon
 	Error          Icon
 	Help           Icon
 	Question       Icon
@@ -323,10 +328,12 @@ func Ask(qs []*Question, response interface{}, opts ...AskOpt) error {
 		}
 	}
 
-	// if we weren't passed a place to record the answers
-	if response == nil {
-		// we can't go any further
-		return errors.New("cannot call Ask() with a nil reference to record the answers")
+	for _, q := range qs {
+		_, ok := q.Prompt.(*Info)
+		if !ok && response == nil {
+			// if we weren't passed a place to record the answers - only on non info
+			return errors.New("cannot call Ask() with a nil reference to record the answers")
+		}
 	}
 
 	validate := func(q *Question, val interface{}) error {

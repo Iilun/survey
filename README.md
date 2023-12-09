@@ -4,11 +4,7 @@
 
 A library for building interactive and accessible prompts on terminals supporting ANSI escape sequences.
 
-⚠️ This project is no longer maintained. For an alternative, please check out: https://github.com/charmbracelet/bubbletea ⚠️
-
-Hey everyone! I finally came to terms with the fact that I can no longer dedicate enough time to keep this library alive. 
-This project outgrew my wildest expectations and was such a great experience. If someone else wants to take over maintainence,
-please reach out
+This project is a fork from https://github.com/AlecAivazis/survey which is no longer maintained
 
 
 <img width="550" src="https://thumbs.gfycat.com/VillainousGraciousKouprey-size_restricted.gif"/>
@@ -113,7 +109,7 @@ survey.Ask(questions, &answers, survey.WithValidator(survey.Required))
 ```golang
 name := ""
 prompt := &survey.Input{
-    Message: "ping",
+    Message: "What's your name?",
 }
 survey.AskOne(prompt, &name)
 ```
@@ -125,12 +121,11 @@ survey.AskOne(prompt, &name)
 ```golang
 file := ""
 prompt := &survey.Input{
-    Message: "inform a file to save:",
+    Message: "Inform a file to save:",
     Suggest: func (toComplete string) []string {
         files, _ := filepath.Glob(toComplete + "*")
         return files
     },
-}
 }
 survey.AskOne(prompt, &file)
 ```
@@ -269,6 +264,18 @@ prompt := &survey.Editor{
 }
 
 survey.AskOne(prompt, &content)
+```
+
+### Info
+
+This is not an input, but allows you to simply display a nicely formatted message to pass an info. No data is sent back (nil)
+
+```golang
+prompt := &survey.Info{
+    Message: "Today is a beautiful day",
+}
+
+survey.AskOne(prompt, nil)
 ```
 
 ## Filtering Options
