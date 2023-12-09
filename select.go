@@ -68,7 +68,7 @@ func (s SelectTemplateData) GetDescription(opt core.OptionAnswer) string {
 
 var SelectQuestionTemplate = `
 {{- define "option"}}
-    {{- if eq .SelectedIndex .CurrentIndex }}{{color .Config.Icons.SelectFocus.Format }}{{ .Config.Icons.SelectFocus.Text }} {{else}}{{color "default"}}  {{end}}
+    {{- if eq .SelectedIndex .CurrentIndex }}{{color .Config.Icons.SelectFocus.Format }}{{ .Config.Icons.SelectFocus.Text }} {{else}}{{color "default"}}{{- spaces .Config.Icons.SelectFocus.Text }} {{end}}
     {{- .CurrentOpt.Value}}{{ if ne ($.GetDescription .CurrentOpt) "" }} - {{color "cyan"}}{{ $.GetDescription .CurrentOpt }}{{end}}
     {{- color "reset"}}
 {{end}}
