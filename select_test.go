@@ -30,6 +30,9 @@ func TestSelectRender(t *testing.T) {
 	helpfulPrompt := prompt
 	helpfulPrompt.Help = "This is helpful"
 
+	withoutFilterPrompt := prompt
+	withoutFilterPrompt.DisableFilter = true
+
 	tests := []struct {
 		title    string
 		prompt   Select
@@ -87,6 +90,27 @@ func TestSelectRender(t *testing.T) {
 				},
 				"\n",
 			),
+		},
+		{
+			"Test Select question output with filter disabled",
+			withoutFilterPrompt,
+			SelectTemplateData{SelectedIndex: 2, PageEntries: core.OptionAnswerList(prompt.Options)},
+			strings.Join(
+				[]string{
+					fmt.Sprintf("%s Pick your word:  [Use arrows to move]", defaultIcons().Question.Text),
+					"  foo",
+					"  bar",
+					fmt.Sprintf("%s baz", defaultIcons().SelectFocus.Text),
+					"  buz\n",
+				},
+				"\n",
+			),
+		},
+		{
+			"Test Select answer output with filter disabled",
+			withoutFilterPrompt,
+			SelectTemplateData{Answer: "buz", ShowAnswer: true, PageEntries: core.OptionAnswerList(prompt.Options)},
+			fmt.Sprintf("%s Pick your word: buz\n", defaultIcons().Question.Text),
 		},
 	}
 
@@ -242,22 +266,6 @@ func TestSelectPrompt(t *testing.T) {
 			core.OptionAnswer{Index: 1, Value: "blue"},
 		},
 		{
-			"filter",
-			&Select{
-				Message: "Choose a color:",
-				Options: []string{"red", "blue", "green"},
-			},
-			func(c expectConsole) {
-				c.ExpectString("Choose a color:")
-				// Filter down to red and green.
-				c.Send("re")
-				// Select green.
-				c.SendLine(string(terminal.KeyArrowDown))
-				c.ExpectEOF()
-			},
-			core.OptionAnswer{Index: 2, Value: "green"},
-		},
-		{
 			"filter is case-insensitive",
 			&Select{
 				Message: "Choose a color:",
@@ -361,6 +369,23 @@ func TestSelectPrompt(t *testing.T) {
 				c.ExpectEOF()
 			},
 			core.OptionAnswer{Index: 2, Value: "小煎鸡"},
+		},
+		{
+			"Disable filter disables user input",
+			&Select{
+				Message:       "Choose a color:",
+				Options:       []string{"red", "blue", "green"},
+				DisableFilter: true,
+			},
+			func(c expectConsole) {
+				c.ExpectString("Choose a color:")
+				// Filter down to red and green.
+				c.Send("RE")
+				// Select green.
+				c.SendLine(string(terminal.KeyArrowDown))
+				c.ExpectEOF()
+			},
+			core.OptionAnswer{Index: 2, Value: "blue"},
 		},
 	}
 

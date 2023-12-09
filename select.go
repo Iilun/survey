@@ -27,6 +27,7 @@ type Select struct {
 	Help          string
 	PageSize      int
 	VimMode       bool
+	DisableFilter bool
 	FilterMessage string
 	Filter        func(filter string, value string, index int) bool
 	Description   func(value string, index int) string
@@ -77,7 +78,7 @@ var SelectQuestionTemplate = `
 {{- color "default+hb"}}{{ .Message }}{{ .FilterMessage }}{{color "reset"}}
 {{- if .ShowAnswer}}{{color "cyan"}} {{.Answer}}{{color "reset"}}{{"\n"}}
 {{- else}}
-  {{- "  "}}{{- color "cyan"}}[Use arrows to move, type to filter{{- if and .Help (not .ShowHelp)}}, {{ .Config.HelpInput }} for more help{{end}}]{{color "reset"}}
+  {{- "  "}}{{- color "cyan"}}[Use arrows to move{{- if not .DisableFilter}}, type to filter{{end}}{{- if and .Help (not .ShowHelp)}}, {{ .Config.HelpInput }} for more help{{end}}]{{color "reset"}}
   {{- "\n"}}
   {{- range $ix, $option := .PageEntries}}
     {{- template "option" $.IterateOption $ix $option}}
@@ -140,7 +141,7 @@ func (s *Select) OnChange(key rune, config *PromptConfig) bool {
 			s.filter = string(runeFilter[0 : len(runeFilter)-1])
 			// we removed the last value in the filter
 		}
-	} else if key >= terminal.KeySpace {
+	} else if key >= terminal.KeySpace && !s.DisableFilter {
 		s.filter += string(key)
 		// make sure vim mode is disabled
 		s.VimMode = false
@@ -192,7 +193,7 @@ func (s *Select) filterOptions(config *PromptConfig) []core.OptionAnswer {
 	answers := []core.OptionAnswer{}
 
 	// if there is no filter applied
-	if s.filter == "" {
+	if s.filter == "" || s.DisableFilter {
 		return core.OptionAnswerList(s.Options)
 	}
 

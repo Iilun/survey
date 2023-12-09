@@ -32,6 +32,9 @@ func TestMultiSelectRender(t *testing.T) {
 	helpfulPrompt := prompt
 	helpfulPrompt.Help = "This is helpful"
 
+	withoutFilterPrompt := prompt
+	withoutFilterPrompt.DisableFilter = true
+
 	pagePrompt := MultiSelect{
 		Message:  "Pick your words:",
 		Options:  []string{"foo", "bar", "baz", "buz"},
@@ -66,6 +69,34 @@ func TestMultiSelectRender(t *testing.T) {
 		{
 			"answer output",
 			prompt,
+			MultiSelectTemplateData{
+				Answer:     "foo, buz",
+				ShowAnswer: true,
+			},
+			fmt.Sprintf("%s Pick your words: foo, buz\n", defaultIcons().Question.Text),
+		},
+		{
+			"question output with filter disabled",
+			withoutFilterPrompt,
+			MultiSelectTemplateData{
+				SelectedIndex: 2,
+				PageEntries:   core.OptionAnswerList(prompt.Options),
+				Checked:       map[int]bool{1: true, 3: true},
+			},
+			strings.Join(
+				[]string{
+					fmt.Sprintf("%s Pick your words:  [Use arrows to move, space to select, <right> to all, <left> to none]", defaultIcons().Question.Text),
+					fmt.Sprintf("  %s  foo", defaultIcons().UnmarkedOption.Text),
+					fmt.Sprintf("  %s  bar", defaultIcons().MarkedOption.Text),
+					fmt.Sprintf("%s %s  baz", defaultIcons().SelectFocus.Text, defaultIcons().UnmarkedOption.Text),
+					fmt.Sprintf("  %s  buz\n", defaultIcons().MarkedOption.Text),
+				},
+				"\n",
+			),
+		},
+		{
+			"answer output with filter disabled",
+			withoutFilterPrompt,
 			MultiSelectTemplateData{
 				Answer:     "foo, buz",
 				ShowAnswer: true,
@@ -652,6 +683,31 @@ func TestMultiSelectPrompt(t *testing.T) {
 			},
 			[]core.OptionAnswer{
 				{Value: "小煎鸡", Index: 2},
+			},
+		},
+		{
+			"disabling filter disables user input",
+			&MultiSelect{
+				Message:       "What days do you prefer:",
+				Options:       []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"},
+				DisableFilter: true,
+			},
+			func(c expectConsole) {
+				c.ExpectString("What days do you prefer:  [Use arrows to move, space to select, <right> to all, <left> to none]")
+				// Filter down to 'Sunday'
+				c.Send("su")
+				// Delete 'u'
+				c.Send(string(terminal.KeyDelete))
+				// Filter down to 'Saturday' - will do nothing if filter disabled
+				c.Send("at")
+				// Select 'Saturday'
+				c.Send(string(terminal.KeyArrowDown))
+				c.Send(" ")
+				c.SendLine("")
+				c.ExpectEOF()
+			},
+			[]core.OptionAnswer{
+				{Value: "Monday", Index: 2},
 			},
 		},
 	}
