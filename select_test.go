@@ -30,6 +30,9 @@ func TestSelectRender(t *testing.T) {
 	helpfulPrompt := prompt
 	helpfulPrompt.Help = "This is helpful"
 
+	customSelectionText := "selected"
+	customSelectionTextEmoji := "👏🎅"
+
 	tests := []struct {
 		title        string
 		prompt       Select
@@ -115,6 +118,42 @@ func TestSelectRender(t *testing.T) {
 			WithDisableFilter(),
 			SelectTemplateData{Answer: "buz", ShowAnswer: true, PageEntries: core.OptionAnswerList(prompt.Options)},
 			fmt.Sprintf("%s Pick your word: buz\n", defaultIcons().Question.Text),
+		},
+		{
+			"Test Select question output with multiple characters long selection text",
+			prompt,
+			WithIcons(func(set *IconSet) {
+				set.SelectFocus.Text = customSelectionText
+			}),
+			SelectTemplateData{SelectedIndex: 2, PageEntries: core.OptionAnswerList(prompt.Options)},
+			strings.Join(
+				[]string{
+					fmt.Sprintf("%s Pick your word:  [Use arrows to move, type to filter]", defaultIcons().Question.Text),
+					fmt.Sprintf("%s foo", strings.Repeat(" ", len(customSelectionText))),
+					fmt.Sprintf("%s bar", strings.Repeat(" ", len(customSelectionText))),
+					fmt.Sprintf("%s baz", customSelectionText),
+					fmt.Sprintf("%s buz", strings.Repeat(" ", len(customSelectionText))),
+				},
+				"\n",
+			),
+		},
+		{
+			"Test Select question output with multiple emoji long selection text",
+			prompt,
+			WithIcons(func(set *IconSet) {
+				set.SelectFocus.Text = customSelectionTextEmoji
+			}),
+			SelectTemplateData{SelectedIndex: 2, PageEntries: core.OptionAnswerList(prompt.Options)},
+			strings.Join(
+				[]string{
+					fmt.Sprintf("%s Pick your word:  [Use arrows to move, type to filter]", defaultIcons().Question.Text),
+					"     foo",
+					"     bar",
+					fmt.Sprintf("%s baz", customSelectionTextEmoji),
+					"     buz",
+				},
+				"\n",
+			),
 		},
 	}
 

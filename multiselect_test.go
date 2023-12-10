@@ -38,6 +38,9 @@ func TestMultiSelectRender(t *testing.T) {
 		PageSize: 2,
 	}
 
+	customSelectionText := "selected"
+	customSelectionTextEmoji := "👏🎅"
+
 	tests := []struct {
 		title        string
 		prompt       MultiSelect
@@ -284,6 +287,56 @@ func TestMultiSelectRender(t *testing.T) {
 				"\n",
 			),
 			nil,
+		},
+		{
+			"Test MultiSelect question output with multiple characters long selection text",
+			prompt,
+			MultiSelectTemplateData{
+				SelectedIndex: 2,
+				PageEntries:   core.OptionAnswerList(prompt.Options),
+				Checked:       map[int]bool{1: true, 3: true},
+				Description: func(value string, index int) string {
+					return fmt.Sprint(index)
+				},
+			},
+			strings.Join(
+				[]string{
+					fmt.Sprintf("%s Pick your words:  [Use arrows to move, space to select, <right> to all, <left> to none, type to filter]", defaultIcons().Question.Text),
+					fmt.Sprintf("%s %s  foo - 0", strings.Repeat(" ", len(customSelectionText)), defaultIcons().UnmarkedOption.Text),
+					fmt.Sprintf("%s %s  bar - 1", strings.Repeat(" ", len(customSelectionText)), defaultIcons().MarkedOption.Text),
+					fmt.Sprintf("%s %s  baz - 2", customSelectionText, defaultIcons().UnmarkedOption.Text),
+					fmt.Sprintf("%s %s  buz - 3\n", strings.Repeat(" ", len(customSelectionText)), defaultIcons().MarkedOption.Text),
+				},
+				"\n",
+			),
+			WithIcons(func(set *IconSet) {
+				set.SelectFocus.Text = customSelectionText
+			}),
+		},
+		{
+			"Test MultiSelect question output with multiple emoji long selection text",
+			prompt,
+			MultiSelectTemplateData{
+				SelectedIndex: 2,
+				PageEntries:   core.OptionAnswerList(prompt.Options),
+				Checked:       map[int]bool{1: true, 3: true},
+				Description: func(value string, index int) string {
+					return fmt.Sprint(index)
+				},
+			},
+			strings.Join(
+				[]string{
+					fmt.Sprintf("%s Pick your words:  [Use arrows to move, space to select, <right> to all, <left> to none, type to filter]", defaultIcons().Question.Text),
+					fmt.Sprintf("     %s  foo - 0", defaultIcons().UnmarkedOption.Text),
+					fmt.Sprintf("     %s  bar - 1", defaultIcons().MarkedOption.Text),
+					fmt.Sprintf("%s %s  baz - 2", customSelectionTextEmoji, defaultIcons().UnmarkedOption.Text),
+					fmt.Sprintf("     %s  buz - 3\n", defaultIcons().MarkedOption.Text),
+				},
+				"\n",
+			),
+			WithIcons(func(set *IconSet) {
+				set.SelectFocus.Text = customSelectionTextEmoji
+			}),
 		},
 	}
 
