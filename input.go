@@ -19,6 +19,7 @@ type Input struct {
 	Renderer
 	Message       string
 	Default       string
+	Prefill       bool
 	Help          string
 	Suggest       func(toComplete string) []string
 	answer        string
@@ -59,7 +60,7 @@ var InputQuestionTemplate = `
     {{- if and .Help (not .ShowHelp)}}{{ print .Config.HelpInput }} for help {{- if and .Suggest}}, {{end}}{{end -}}
     {{- if and .Suggest }}{{color "cyan"}}{{ print .Config.SuggestInput }} for suggestions{{end -}}
   ]{{color "reset"}} {{end}}
-  {{- if .Default}}{{color "white"}}({{.Default}}) {{color "reset"}}{{end}}
+  {{- if and .Default (not .Prefill)}}{{color "gray"}}({{.Default}}) {{color "reset"}}{{end}}
 {{- end}}`
 
 func (i *Input) onRune(config *PromptConfig) terminal.OnRuneFn {
@@ -165,6 +166,9 @@ func (i *Input) Prompt(config *PromptConfig) (interface{}, error) {
 	}
 
 	var line []rune
+	if i.Prefill {
+		line = []rune(i.Default)
+	}
 
 	for {
 		if i.options != nil {
@@ -195,7 +199,7 @@ func (i *Input) Prompt(config *PromptConfig) (interface{}, error) {
 	}
 
 	// if the line is empty
-	if len(i.answer) == 0 {
+	if len(i.answer) == 0 && !i.Prefill {
 		// use the default value
 		return i.Default, err
 	}

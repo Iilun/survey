@@ -125,6 +125,32 @@ prompt := &survey.Input{
 }
 survey.AskOne(prompt, &file)
 ```
+#### Default
+
+<img src="img/input-with-default.gif" alt="Input with default demonstration" width="100%">
+
+```golang
+library := ""
+prompt := &survey.Input{
+    Message: "My favorite go library:",
+	Default: "survey"
+}
+survey.AskOne(prompt, &library)
+```
+
+#### Prefill
+
+<img src="img/input-with-prefill.gif" alt="Input with prefill demonstration" width="100%">
+
+```golang
+library := ""
+prompt := &survey.Input{
+    Message: "My favorite go library:",
+    Prefill: true,
+    Default: "survey",
+}
+survey.AskOne(prompt, &library)
+```
 
 ### Multiline
 
