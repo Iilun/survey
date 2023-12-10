@@ -244,6 +244,21 @@ prompt := &survey.MultiSelect{..., PageSize: 10}
 survey.AskOne(prompt, &days, survey.WithPageSize(10))
 ```
 
+### Slider
+
+<img src="img/slider.gif" alt="Slider input demonstration" width="100%">
+
+```golang
+pies := 0
+prompt := &survey.Slider{
+    Message: "How many pies do you want?",
+    Max: 50,
+}
+survey.AskOne(prompt, &pies)
+```
+
+A slider allow to retrieve an int value from the user. It can be configured using `Min` and `Max` value. The default size is a 26 characters long slider, this can be configured using `MaxSize`.
+
 ### Editor
 
 Launches the user's preferred editor (defined by the \$VISUAL or \$EDITOR environment variables) on a
