@@ -110,7 +110,7 @@ func (s *Slider) computeSliderContent(config *PromptConfig) []Icon {
 
 	// Computing how much one character represents
 	interval := (s.Max - s.Min) / s.MaxSize
-	if interval == 0 {
+	if interval <= 0 {
 		interval = 1
 	}
 	for i := s.Min; i <= s.Max; i += interval {

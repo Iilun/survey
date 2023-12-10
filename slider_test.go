@@ -136,10 +136,10 @@ func TestSliderPrompt(t *testing.T) {
 			},
 			nil,
 			func(c expectConsole) {
-				c.ExpectString("*------------------------ 0")
+				c.ExpectString("*------------------------- 0")
 				// Increase the value by one
 				c.Send(string(terminal.KeyArrowRight))
-				c.ExpectString("-*----------------------- 1")
+				c.ExpectString("-*------------------------ 1")
 				// Validate
 				c.SendLine("")
 				c.ExpectEOF()
@@ -155,10 +155,10 @@ func TestSliderPrompt(t *testing.T) {
 			},
 			nil,
 			func(c expectConsole) {
-				c.ExpectString("-------------------*----- 20")
+				c.ExpectString("--------------------*----- 20")
 				// Decrease the value by one
 				c.Send(string(terminal.KeyArrowLeft))
-				c.ExpectString("------------------*------ 19")
+				c.ExpectString("-------------------*------ 19")
 				// Validate
 				c.SendLine("")
 				c.ExpectEOF()
@@ -174,10 +174,10 @@ func TestSliderPrompt(t *testing.T) {
 			},
 			nil,
 			func(c expectConsole) {
-				c.ExpectString("*------------------------ 20")
+				c.ExpectString("*------------------------- 20")
 				// Decrease the value by one - does nothing
 				c.Send(string(terminal.KeyArrowLeft))
-				c.ExpectString("*------------------------ 20")
+				c.ExpectString("*------------------------- 20")
 				// Validate
 				c.SendLine("")
 				c.ExpectEOF()
@@ -193,10 +193,10 @@ func TestSliderPrompt(t *testing.T) {
 			},
 			nil,
 			func(c expectConsole) {
-				c.ExpectString("*------------------------ -70")
+				c.ExpectString("*------------------------- -70")
 				// Decrease the value by 10 - does nothing
 				c.Send(string(terminal.KeyArrowDown))
-				c.ExpectString("*------------------------ -70")
+				c.ExpectString("*------------------------- -70")
 				// Validate
 				c.SendLine("")
 				c.ExpectEOF()
@@ -211,16 +211,16 @@ func TestSliderPrompt(t *testing.T) {
 			},
 			nil,
 			func(c expectConsole) {
-				c.ExpectString("*-------- 0")
+				c.ExpectString("*---------- 0")
 				// Increase the value by 10
 				c.Send(string(terminal.KeyArrowUp))
-				c.ExpectString("--------* 10")
+				c.ExpectString("----------* 10")
 				// Increase the value by 10 - does nothing
 				c.Send(string(terminal.KeyArrowUp))
-				c.ExpectString("--------* 10")
+				c.ExpectString("----------* 10")
 				// Increase the value by 1 - does nothing
 				c.Send(string(terminal.KeyArrowRight))
-				c.ExpectString("--------* 10")
+				c.ExpectString("----------* 10")
 				// Validate
 				c.SendLine("")
 				c.ExpectEOF()
