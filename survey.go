@@ -176,7 +176,7 @@ func WithFilter(filter func(filter string, value string, index int) (include boo
 	}
 }
 
-// WithDisableFilter specifies disables the filter behavior.
+// WithDisableFilter disables the filter behavior.
 func WithDisableFilter() AskOpt {
 	return func(options *AskOptions) error {
 		// save the boolean internally

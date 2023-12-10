@@ -318,6 +318,19 @@ However the user can prevent this from happening and keep the filter active for 
 survey.AskOne(prompt, &color, survey.WithKeepFilter(true))
 ```
 
+## Disabling the filter
+
+By default the filter is always enabled. To disable it, use the `WithDisableFilter` option
+
+```golang
+&Select{
+    Message:    "Choose a color:",
+    Options:    []string{"light-green", "green", "dark-green", "red"},
+}
+
+survey.AskOne(prompt, &color, survey.WithDisableFilter())
+```
+
 ## Validation
 
 Validating individual responses for a particular question can be done by defining a
