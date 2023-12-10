@@ -140,7 +140,6 @@ type PromptConfig struct {
 	RemoveSelectAll  bool
 	RemoveSelectNone bool
 	HideCharacter    rune
-	ChangeInterval   int
 }
 
 // Prompt is the primary interface for the objects that can take user input
