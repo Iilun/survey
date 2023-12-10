@@ -24,14 +24,13 @@ func color(style string) string {
 	case "gray":
 		// Fails on windows, only affects defaults
 		if env256ColorSupported() {
-			return ansi.ColorCode("90")
+			return ansi.ColorCode("8")
 		}
 		return ansi.ColorCode("default")
 	default:
 		return ansi.ColorCode(style)
 	}
 }
-
 func spaces(selectorText string) string {
 	length := 0
 	for _, s := range selectorText {
