@@ -53,6 +53,14 @@ func defaultAskOptions() *AskOptions {
 					Text:   ">",
 					Format: "cyan+b",
 				},
+				SliderFiller: Icon{
+					Text:   "-",
+					Format: "default+hb",
+				},
+				SliderCursor: Icon{
+					Text:   "*",
+					Format: "cyan+b",
+				},
 			},
 			Filter: func(filter string, value string, index int) (include bool) {
 				filter = strings.ToLower(filter)
@@ -95,6 +103,8 @@ type IconSet struct {
 	MarkedOption   Icon
 	UnmarkedOption Icon
 	SelectFocus    Icon
+	SliderFiller   Icon
+	SliderCursor   Icon
 }
 
 // Validator is a function passed to a Question after a user has provided a response.
