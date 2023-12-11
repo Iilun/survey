@@ -15,10 +15,22 @@ var DisableColor = false
 
 var TemplateFuncsWithColor = map[string]interface{}{
 	// Templates with Color formatting. See Documentation: https://github.com/mgutz/ansi#style-format
-	"color":  ansi.ColorCode,
+	"color":  color,
 	"spaces": spaces,
 }
 
+func color(style string) string {
+	switch style {
+	case "gray":
+		// Fails on windows, only affects defaults
+		if env256ColorSupported() {
+			return ansi.ColorCode("8")
+		}
+		return ansi.ColorCode("default")
+	default:
+		return ansi.ColorCode(style)
+	}
+}
 func spaces(selectorText string) string {
 	length := 0
 	for _, s := range selectorText {
@@ -50,6 +62,25 @@ func envColorDisabled() bool {
 func envColorForced() bool {
 	val, ok := os.LookupEnv("CLICOLOR_FORCE")
 	return ok && val != "0"
+}
+
+// Could probably be improved
+// env256ColorSupported returns if terminal supports ansi 256 colors - taken from github code: https://github.com/cli/go-gh/blob/trunk/pkg/term/env.go
+func env256ColorSupported() bool {
+	return envTrueColorSupported() ||
+		strings.Contains(os.Getenv("TERM"), "256") ||
+		strings.Contains(os.Getenv("COLORTERM"), "256")
+}
+
+// envTrueColorSupported returns if terminal supports true color - taken from github code: https://github.com/cli/go-gh/blob/trunk/pkg/term/env.go
+func envTrueColorSupported() bool {
+	term := os.Getenv("TERM")
+	colorterm := os.Getenv("COLORTERM")
+
+	return strings.Contains(term, "24bit") ||
+		strings.Contains(term, "truecolor") ||
+		strings.Contains(colorterm, "24bit") ||
+		strings.Contains(colorterm, "truecolor")
 }
 
 // RunTemplate returns two formatted strings given a template and
