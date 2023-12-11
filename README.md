@@ -125,6 +125,32 @@ prompt := &survey.Input{
 }
 survey.AskOne(prompt, &file)
 ```
+#### Default
+
+<img src="img/input-with-default.gif" alt="Input with default demonstration" width="100%">
+
+```golang
+library := ""
+prompt := &survey.Input{
+    Message: "My favorite go library:",
+	Default: "survey"
+}
+survey.AskOne(prompt, &library)
+```
+
+#### Prefill
+
+<img src="img/input-with-prefill.gif" alt="Input with prefill demonstration" width="100%">
+
+```golang
+library := ""
+prompt := &survey.Input{
+    Message: "My favorite go library:",
+    Prefill: true,
+    Default: "survey",
+}
+survey.AskOne(prompt, &library)
+```
 
 ### Multiline
 
@@ -244,6 +270,21 @@ prompt := &survey.MultiSelect{..., PageSize: 10}
 survey.AskOne(prompt, &days, survey.WithPageSize(10))
 ```
 
+### Slider
+
+<img src="img/slider.gif" alt="Slider input demonstration" width="100%">
+
+```golang
+pies := 0
+prompt := &survey.Slider{
+    Message: "How many pies do you want?",
+    Max: 50,
+}
+survey.AskOne(prompt, &pies)
+```
+
+A slider allow to retrieve an int value from the user. It can be configured using `Min` and `Max` value. The default size is a 26 characters long slider, this can be configured using `MaxSize`.
+
 ### Editor
 
 Launches the user's preferred editor (defined by the \$VISUAL or \$EDITOR environment variables) on a
@@ -316,6 +357,19 @@ However the user can prevent this from happening and keep the filter active for 
 
 // or define a default for all of the questions
 survey.AskOne(prompt, &color, survey.WithKeepFilter(true))
+```
+
+## Disabling the filter
+
+By default the filter is always enabled. To disable it, use the `WithDisableFilter` option
+
+```golang
+&Select{
+    Message:    "Choose a color:",
+    Options:    []string{"light-green", "green", "dark-green", "red"},
+}
+
+survey.AskOne(prompt, &color, survey.WithDisableFilter())
 ```
 
 ## Validation

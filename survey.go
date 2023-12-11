@@ -53,6 +53,14 @@ func defaultAskOptions() *AskOptions {
 					Text:   ">",
 					Format: "cyan+b",
 				},
+				SliderFiller: Icon{
+					Text:   "-",
+					Format: "default+hb",
+				},
+				SliderCursor: Icon{
+					Text:   "*",
+					Format: "cyan+b",
+				},
 			},
 			Filter: func(filter string, value string, index int) (include bool) {
 				filter = strings.ToLower(filter)
@@ -95,6 +103,8 @@ type IconSet struct {
 	MarkedOption   Icon
 	UnmarkedOption Icon
 	SelectFocus    Icon
+	SliderFiller   Icon
+	SliderCursor   Icon
 }
 
 // Validator is a function passed to a Question after a user has provided a response.
@@ -176,7 +186,7 @@ func WithFilter(filter func(filter string, value string, index int) (include boo
 	}
 }
 
-// WithDisableFilter specifies disables the filter behavior.
+// WithDisableFilter disables the filter behavior.
 func WithDisableFilter() AskOpt {
 	return func(options *AskOptions) error {
 		// save the boolean internally

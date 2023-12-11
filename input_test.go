@@ -102,6 +102,16 @@ func TestInputRender(t *testing.T) {
 				defaultIcons().Question.Text, defaultPromptConfig().Icons.SelectFocus.Text,
 			),
 		},
+		{
+			"Test Input question output with default prefilled",
+			Input{Message: "What is your favorite month:", Prefill: true, Default: "January"},
+			InputTemplateData{},
+			fmt.Sprintf(
+				// It is not rendered, the reader has tha value by default
+				"%s What is your favorite month: ",
+				defaultIcons().Question.Text,
+			),
+		},
 	}
 
 	for _, test := range tests {
@@ -160,6 +170,37 @@ func TestInputPrompt(t *testing.T) {
 				c.ExpectEOF()
 			},
 			"Johnny Appleseed",
+		},
+		{
+			"Test Input prompt interaction with default prefilled",
+			&Input{
+				Message: "What is your name?",
+				Default: "Johnny Appleseed",
+				Prefill: true,
+			},
+			nil,
+			func(c expectConsole) {
+				c.ExpectString("What is your name?")
+				c.SendLine("")
+				c.ExpectEOF()
+			},
+			"Johnny Appleseed",
+		},
+		{
+			"Test Input prompt interaction with default prefilled being modified",
+			&Input{
+				Message: "What is your name?",
+				Default: "Johnny Appleseed",
+				Prefill: true,
+			},
+			nil,
+			func(c expectConsole) {
+				c.ExpectString("What is your name?")
+				c.Send(string(terminal.KeyDelete))
+				c.SendLine("")
+				c.ExpectEOF()
+			},
+			"Johnny Applesee",
 		},
 		{
 			"Test Input prompt interaction overriding default",

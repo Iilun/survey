@@ -30,7 +30,7 @@ var ConfirmQuestionTemplate = `
   {{- color "cyan"}}{{.Answer}}{{color "reset"}}{{"\n"}}
 {{- else }}
   {{- if and .Help (not .ShowHelp)}}{{color "cyan"}}[{{ .Config.HelpInput }} for help]{{color "reset"}} {{end}}
-  {{- color "white"}}{{if .Default}}(Y/n) {{else}}(y/N) {{end}}{{color "reset"}}
+  {{- color "gray"}}{{if .Default}}(Y/n) {{else}}(y/N) {{end}}{{color "reset"}}
 {{- end}}`
 
 // the regex for answers

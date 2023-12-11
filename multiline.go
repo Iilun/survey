@@ -31,7 +31,7 @@ var MultilineQuestionTemplate = `
   {{- "\n"}}{{color "cyan"}}{{.Answer}}{{color "reset"}}
   {{- if .Answer }}{{ "\n" }}{{ end }}
 {{- else }}
-  {{- if .Default}}{{color "white"}}({{.Default}}) {{color "reset"}}{{end}}
+  {{- if .Default}}{{color "gray"}}({{.Default}}) {{color "reset"}}{{end}}
   {{- color "cyan"}}[Enter 2 empty lines to finish]{{color "reset"}}
 {{- end}}`
 
