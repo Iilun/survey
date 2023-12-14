@@ -60,13 +60,15 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 	terminalSize, _ := cursor.Size(rr.Buffer())
 	// we set the current location of the cursor once
 	cursorCurrent, _ := cursor.Location(rr.Buffer())
-
+	wroteOnLine := COORDINATE_SYSTEM_BEGIN == 0
 	increment := func() {
 		if cursorCurrent.CursorIsAtLineEnd(terminalSize) {
 			cursorCurrent.X = COORDINATE_SYSTEM_BEGIN
 			cursorCurrent.Y++
+			wroteOnLine = COORDINATE_SYSTEM_BEGIN == 0
 		} else {
 			cursorCurrent.X++
+			wroteOnLine = true
 		}
 	}
 	decrement := func() {
@@ -141,7 +143,7 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 					cells := runeWidth(line[len(line)-1])
 					line = line[:len(line)-1]
 					// go back one
-					if cursorCurrent.X == 1 {
+					if cursorCurrent.X == COORDINATE_SYSTEM_BEGIN && wroteOnLine {
 						cursor.PreviousLine(1)
 						cursor.Forward(int(terminalSize.X))
 					} else {
