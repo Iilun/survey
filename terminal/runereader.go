@@ -2,6 +2,7 @@ package terminal
 
 import (
 	"fmt"
+	log "github.com/Iilun/survey/v2/internal"
 	"unicode"
 
 	"golang.org/x/text/width"
@@ -55,29 +56,40 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 	if len(onRunes) > 0 {
 		onRune = onRunes[0]
 	}
-
+	cursorIsInLastPosition := false
 	// we get the terminal width and height (if resized after this point the property might become invalid)
 	terminalSize, _ := cursor.Size(rr.Buffer())
 	// we set the current location of the cursor once
 	cursorCurrent, _ := cursor.Location(rr.Buffer())
-	wroteOnLine := COORDINATE_SYSTEM_BEGIN == 0
+	// CHANGE THIS
+	wroteOnLine := true
 	increment := func() {
-		if cursorCurrent.CursorIsAtLineEnd(terminalSize) {
-			cursorCurrent.X = COORDINATE_SYSTEM_BEGIN
+		if !cursorIsInLastPosition && cursorCurrent.CursorIsAtLineEnd(terminalSize) {
+			cursorIsInLastPosition = true
+		} else if cursorCurrent.CursorIsAtLineEnd(terminalSize) {
+			cursorCurrent.X = 1
 			cursorCurrent.Y++
-			wroteOnLine = COORDINATE_SYSTEM_BEGIN == 0
+			wroteOnLine = true
+			cursorIsInLastPosition = false
 		} else {
 			cursorCurrent.X++
 			wroteOnLine = true
+			cursorIsInLastPosition = false
 		}
+		log.Printf("Incremented to %d, cursor %b", cursorCurrent.X, cursorIsInLastPosition)
 	}
 	decrement := func() {
-		if cursorCurrent.CursorIsAtLineBegin() {
+		if cursorIsInLastPosition && cursorCurrent.CursorIsAtLineEnd(terminalSize) {
+			cursorIsInLastPosition = false
+		} else if cursorCurrent.CursorIsAtLineBegin() {
 			cursorCurrent.X = terminalSize.X
 			cursorCurrent.Y--
+			cursorIsInLastPosition = false
 		} else {
 			cursorCurrent.X--
+			cursorIsInLastPosition = false
 		}
+		log.Printf("Decremented to %d, cursor %b", cursorCurrent.X, cursorIsInLastPosition)
 	}
 
 	if len(d) > 0 {
@@ -143,15 +155,23 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 					cells := runeWidth(line[len(line)-1])
 					line = line[:len(line)-1]
 					// go back one
+					log.Printf("X %d, %d", cursorCurrent.X, cursorIsInLastPosition)
 					if cursorCurrent.X == COORDINATE_SYSTEM_BEGIN && wroteOnLine {
 						cursor.PreviousLine(1)
 						cursor.Forward(int(terminalSize.X))
+						// clear the rest of the line
+						EraseLine(rr.stdio.Out, ERASE_LINE_END)
+					} else if cursorIsInLastPosition {
+						// clear the rest of the line
+						EraseLine(rr.stdio.Out, ERASE_LINE_END)
+						cursor.Back(cells)
+						cursor.Forward(cells)
 					} else {
 						cursor.Back(cells)
+						// clear the rest of the line
+						EraseLine(rr.stdio.Out, ERASE_LINE_END)
 					}
 
-					// clear the rest of the line
-					EraseLine(rr.stdio.Out, ERASE_LINE_END)
 				} else {
 					// we need to remove a character from the middle of the word
 
