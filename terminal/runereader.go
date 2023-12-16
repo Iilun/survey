@@ -79,7 +79,7 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 			wroteOnLine = true
 			cursorIsInLastPosition = false
 		}
-		log.Printf("Incremented to %d, cursor %b", cursorCurrent.X, cursorIsInLastPosition)
+		log.Printf("Incremented to %d, cursor is on last char: %t", cursorCurrent.X, cursorIsInLastPosition)
 	}
 	decrement := func() {
 		if cursorIsInLastPosition && cursorCurrent.CursorIsAtLineEnd(terminalSize) {
@@ -92,7 +92,7 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 			cursorCurrent.X--
 			cursorIsInLastPosition = false
 		}
-		log.Printf("Decremented to %d, cursor %b", cursorCurrent.X, cursorIsInLastPosition)
+		log.Printf("Decremented to %d, cursor is on last char: %t", cursorCurrent.X, cursorIsInLastPosition)
 	}
 
 	if len(d) > 0 {
@@ -158,7 +158,6 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 					cells := runeWidth(line[len(line)-1])
 					line = line[:len(line)-1]
 					// go back one
-					log.Printf("X %d, %d", cursorCurrent.X, cursorIsInLastPosition)
 					if cursorCurrent.X == COORDINATE_SYSTEM_BEGIN && wroteOnLine {
 						cursor.PreviousLine(1)
 						cursor.Forward(int(terminalSize.X))
