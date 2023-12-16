@@ -62,6 +62,7 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 	// we set the current location of the cursor once
 	cursorCurrent, _ := cursor.Location(rr.Buffer())
 	wroteOnLine := COORDINATE_SYSTEM_BEGIN == 0
+	log.Printf("Cursor stagnates %t", CURSOR_STAGNATES_ON_LAST_CHAR)
 	increment := func() {
 		if CURSOR_STAGNATES_ON_LAST_CHAR && !cursorIsInLastPosition && cursorCurrent.CursorIsAtLineEnd(terminalSize) {
 			cursorIsInLastPosition = true

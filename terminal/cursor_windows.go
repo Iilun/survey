@@ -3,7 +3,6 @@ package terminal
 import (
 	"bytes"
 	"fmt"
-	log "github.com/Iilun/survey/v2/internal"
 	"os"
 	"syscall"
 	"unsafe"
@@ -17,7 +16,6 @@ func init() {
 	if windowsTerminalSession := os.Getenv("WT_SESSION"); windowsTerminalSession != "" {
 		CURSOR_STAGNATES_ON_LAST_CHAR = true
 	}
-	log.Printf("Cursor stagnates %t", CURSOR_STAGNATES_ON_LAST_CHAR)
 }
 
 // shared variable to save the cursor location from CursorSave()
