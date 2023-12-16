@@ -122,6 +122,7 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 			for index > 0 {
 				if cursorCurrent.CursorIsAtLineBegin() {
 					EraseLine(rr.stdio.Out, ERASE_LINE_END)
+					cursor.PreviousLine(1)
 					cursor.Forward(int(terminalSize.X))
 				} else {
 					cursor.Back(1)
