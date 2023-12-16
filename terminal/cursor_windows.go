@@ -17,7 +17,6 @@ func init() {
 	if windowsTerminalSession := os.Getenv("WT_SESSION"); windowsTerminalSession != "" {
 		CURSOR_STAGNATES_ON_LAST_CHAR = true
 	}
-	CURSOR_STAGNATES_ON_LAST_CHAR = true
 	log.Printf("Cursor stagnates %t", CURSOR_STAGNATES_ON_LAST_CHAR)
 }
 
