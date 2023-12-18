@@ -3,6 +3,7 @@ package terminal
 import (
 	"bytes"
 	"fmt"
+	log "github.com/Iilun/survey/v2/internal"
 	"os"
 	"syscall"
 	"unsafe"
@@ -75,6 +76,7 @@ func (c *Cursor) cursorMove(x int, y int, xIsAbs bool) error {
 		return err
 	}
 
+	log.Printf("Before move is at %d %d", csbi.cursorPosition.X, csbi.cursorPosition.Y)
 	var cursor Coord
 	if xIsAbs {
 		cursor.X = Short(x)
@@ -82,6 +84,7 @@ func (c *Cursor) cursorMove(x int, y int, xIsAbs bool) error {
 		cursor.X = csbi.cursorPosition.X + Short(x)
 	}
 	cursor.Y = csbi.cursorPosition.Y + Short(y)
+	log.Printf("After move is at %d %d", cursor.X, cursor.Y)
 
 	_, _, err := procSetConsoleCursorPosition.Call(uintptr(handle), uintptr(*(*int32)(unsafe.Pointer(&cursor))))
 	if normalizeError(err) != nil {
