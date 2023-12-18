@@ -65,7 +65,7 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 	wroteOnLine := COORDINATE_SYSTEM_BEGIN == 0
 	log.Printf("Cursor stagnates %t", CURSOR_STAGNATES_ON_LAST_CHAR)
 	increment := func() {
-		if CURSOR_STAGNATES_ON_LAST_CHAR && !cursorIsInLastPosition && cursorCurrent.CursorIsAtLineEnd(terminalSize) {
+		if CURSOR_STAGNATES_ON_LAST_CHAR && !cursorIsInLastPosition && cursorCurrent.CursorIsAtLineEnd(terminalSize) && lastAction == "write" {
 			cursorIsInLastPosition = true
 		} else if cursorCurrent.CursorIsAtLineEnd(terminalSize) {
 			cursorCurrent.X = COORDINATE_SYSTEM_BEGIN
@@ -120,18 +120,7 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 
 		// if the user pressed enter or some other newline/termination like ctrl+d
 		if r == '\r' || r == '\n' || r == KeyEndTransmission {
-			// delete what's printed out on the console screen (cleanup)
-			for index > 0 {
-				if cursorCurrent.CursorIsAtLineBegin() {
-					EraseLine(rr.stdio.Out, ERASE_LINE_END)
-					cursor.PreviousLine(1)
-					cursor.Forward(int(terminalSize.X))
-				} else {
-					cursor.Back(1)
-				}
-				decrement()
-				index--
-			}
+			// Cleanup is handled by rerender
 			// move the cursor the a new line
 			cursor.MoveNextLine(cursorCurrent, terminalSize)
 
@@ -190,7 +179,7 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 					cursor.Save()
 
 					// clear the rest of the line
-					if cursorCurrent.CursorIsAtLineBegin() && CURSOR_STAGNATES_ON_LAST_CHAR {
+					if cursorCurrent.CursorIsAtLineBegin() {
 						cursor.PreviousLine(1)
 						cursor.Forward(int(terminalSize.X))
 					} else {
@@ -206,6 +195,7 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 							return line, err
 						}
 					}
+					EraseLine(rr.stdio.Out, ERASE_LINE_END)
 					// erase what's left over from last print
 					if cursorCurrent.Y < terminalSize.Y {
 						cursor.NextLine(1)
@@ -239,7 +229,7 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 			// if we have space to the left
 			if index > 0 {
 				//move the cursor to the prev line if necessary
-				if cursorCurrent.CursorIsAtLineBegin() {
+				if cursorCurrent.CursorIsAtLineBegin() && !(lastAction == "arrowRight" || lastAction == "write") {
 					cursor.PreviousLine(1)
 					cursor.Forward(int(terminalSize.X))
 				} else {
@@ -265,7 +255,7 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 			if index < len(line) {
 				// move the cursor to the next line if necessary
 				if cursorCurrent.CursorIsAtLineEnd(terminalSize) {
-					cursor.NextLine(1)
+					cursor.MoveNextLine(cursorCurrent, terminalSize)
 				} else {
 					cursor.Forward(runeWidth(line[index]))
 				}

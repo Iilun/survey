@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/Iilun/survey/v2/core"
+	log "github.com/Iilun/survey/v2/internal"
 	"github.com/Iilun/survey/v2/terminal"
 	"golang.org/x/term"
 )
@@ -80,6 +81,8 @@ func (r *Renderer) OffsetCursor(offset int) {
 func (r *Renderer) Render(tmpl string, data interface{}) error {
 	// cleanup the currently rendered text
 	lineCount := r.countLines(r.renderedText)
+	log.Printf("Text: %s", r.renderedText.String())
+	log.Printf("Counted answer for %d lines", r.countLines(r.renderedText))
 	r.resetPrompt(lineCount)
 	r.renderedText.Reset()
 
@@ -164,7 +167,6 @@ func (r *Renderer) countLines(buf bytes.Buffer) int {
 	w := r.termWidthSafe()
 
 	bufBytes := buf.Bytes()
-
 	count := 0
 	curr := 0
 	for curr < len(bufBytes) {
@@ -190,6 +192,5 @@ func (r *Renderer) countLines(buf bytes.Buffer) int {
 		}
 		curr = delim + 1
 	}
-
 	return count
 }
