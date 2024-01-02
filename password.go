@@ -1,11 +1,7 @@
 package survey
 
 import (
-	"fmt"
 	"strings"
-
-	"github.com/Iilun/survey/v2/core"
-	"github.com/Iilun/survey/v2/terminal"
 )
 
 /*
@@ -44,20 +40,13 @@ var PasswordQuestionTemplate = `
 
 func (p *Password) Prompt(config *PromptConfig) (interface{}, error) {
 	// render the question template
-	userOut, _, err := core.RunTemplate(
+	err := p.Render(
 		PasswordQuestionTemplate,
 		PasswordTemplateData{
 			Password: *p,
 			Config:   config,
 		},
 	)
-	if err != nil {
-		return "", err
-	}
-
-	if _, err := fmt.Fprint(terminal.NewAnsiStdout(p.Stdio().Out), userOut); err != nil {
-		return "", err
-	}
 
 	rr := p.NewRuneReader()
 	_ = rr.SetTermMode()
@@ -74,6 +63,7 @@ func (p *Password) Prompt(config *PromptConfig) (interface{}, error) {
 			return p.answer, err
 		}
 		cursor.PreviousLine(1)
+		p.AppendRenderedText(strings.Repeat(string(config.HideCharacter), len(p.answer)))
 		return p.answer, err
 	}
 

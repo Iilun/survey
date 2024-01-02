@@ -14,6 +14,8 @@ import (
 
 var COORDINATE_SYSTEM_BEGIN Short = 1
 
+var CURSOR_STAGNATES_ON_LAST_CHAR = false
+
 var dsrPattern = regexp.MustCompile(`\x1b\[(\d+);(\d+)R$`)
 
 type Cursor struct {
