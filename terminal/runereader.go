@@ -117,7 +117,6 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 		if l, stop, err := onRune(r, line); stop || err != nil {
 			return l, err
 		}
-
 		// if the user pressed enter or some other newline/termination like ctrl+d
 		if r == '\r' || r == '\n' || r == KeyEndTransmission {
 			// Cleanup is handled by rerender
@@ -136,6 +135,22 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 
 			// we're done processing the input, and treat interrupt like an error
 			return line, InterruptErr
+		}
+
+		if r == KeyPaste {
+			clipboardData := rr.Paste()
+			if clipboardData != nil {
+				for _, char := range clipboardData {
+					line = append(line, rune(char))
+					if err := rr.printChar(rune(char), mask); err != nil {
+						return line, err
+					}
+					index++
+					increment()
+					lastAction = "write"
+				}
+				continue
+			}
 		}
 
 		// allow for backspace/delete editing of inputs
