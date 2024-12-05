@@ -15,6 +15,7 @@ const (
 	KeyBackspace       = '\b'
 	KeyDelete          = '\x7f'
 	KeyInterrupt       = '\x03'
+	KeyPaste           = '\x16'
 	KeyEndTransmission = '\x04'
 	KeyEscape          = '\x1b'
 	KeyDeleteWord      = '\x17' // Ctrl+W

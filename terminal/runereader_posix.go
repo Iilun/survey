@@ -130,3 +130,8 @@ func (rr *RuneReader) ReadRune() (rune, int, error) {
 	_, _ = rr.state.reader.Discard(1)
 	return IgnoreKey, 1, nil
 }
+
+func (rr *RuneReader) Paste() []byte {
+	// Paste is not supported on Unix
+	return nil
+}
