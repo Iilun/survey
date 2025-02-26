@@ -117,6 +117,7 @@ func (rr *RuneReader) ReadLineWithDefault(mask rune, d []rune, onRunes ...OnRune
 		if l, stop, err := onRune(r, line); stop || err != nil {
 			return l, err
 		}
+
 		// if the user pressed enter or some other newline/termination like ctrl+d
 		if r == '\r' || r == '\n' || r == KeyEndTransmission {
 			// Cleanup is handled by rerender

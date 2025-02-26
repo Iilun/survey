@@ -12,7 +12,6 @@ var (
 	setConsoleMode   = dll.NewProc("SetConsoleMode")
 	getConsoleMode   = dll.NewProc("GetConsoleMode")
 	readConsoleInput = dll.NewProc("ReadConsoleInputW")
-	getClipboardData = dll.NewProc("GetClipboardData")
 )
 
 const (
