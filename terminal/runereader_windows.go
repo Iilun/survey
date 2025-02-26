@@ -2,6 +2,7 @@ package terminal
 
 import (
 	"bytes"
+	"golang.design/x/clipboard"
 	"syscall"
 	"unsafe"
 )
@@ -109,8 +110,11 @@ func (rr *RuneReader) ReadRune() (rune, int, error) {
 		if key.bKeyDown == 0 {
 			continue
 		}
-		if key.wdControlKeyState&(LEFT_CTRL_PRESSED|RIGHT_CTRL_PRESSED) != 0 && key.unicodeChar == 'C' {
+		if key.wdControlKeyState&(LEFT_CTRL_PRESSED|RIGHT_CTRL_PRESSED) != 0 && key.unicodeChar == 3 {
 			return KeyInterrupt, bytesRead, nil
+		}
+		if key.wdControlKeyState&(LEFT_CTRL_PRESSED|RIGHT_CTRL_PRESSED) != 0 && key.unicodeChar == 22 {
+			return KeyPaste, bytesRead, nil
 		}
 		// not a normal character so look up the input sequence from the
 		// virtual key code mappings (VK_*)
@@ -139,4 +143,8 @@ func (rr *RuneReader) ReadRune() (rune, int, error) {
 		r := rune(key.unicodeChar)
 		return r, bytesRead, nil
 	}
+}
+
+func (rr *RuneReader) Paste() []byte {
+	return clipboard.Read(0)
 }
