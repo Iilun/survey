@@ -261,6 +261,7 @@ var multiQs = []*survey.Question{
 				"Zambia",
 				"Zimbabwe",
 			},
+			ShowTotalChecked: true,
 		},
 	},
 }

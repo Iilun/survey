@@ -21,19 +21,20 @@ for them to select using the arrow keys and enter. Response type is a slice of s
 */
 type MultiSelect struct {
 	Renderer
-	Message       string
-	Options       []string
-	Default       interface{}
-	Help          string
-	PageSize      int
-	VimMode       bool
-	FilterMessage string
-	Filter        func(filter string, value string, index int) bool
-	Description   func(value string, index int) string
-	filter        string
-	selectedIndex int
-	checked       map[int]bool
-	showingHelp   bool
+	Message          string
+	Options          []string
+	Default          interface{}
+	Help             string
+	PageSize         int
+	VimMode          bool
+	FilterMessage    string
+	Filter           func(filter string, value string, index int) bool
+	Description      func(value string, index int) string
+	ShowTotalChecked bool
+	filter           string
+	selectedIndex    int
+	checked          map[int]bool
+	showingHelp      bool
 }
 
 // data available to the templates when processing
@@ -49,8 +50,10 @@ type MultiSelectTemplateData struct {
 	Config        *PromptConfig
 
 	// These fields are used when rendering an individual option
-	CurrentOpt   core.OptionAnswer
-	CurrentIndex int
+	CurrentOpt       core.OptionAnswer
+	CurrentIndex     int
+	ShowTotalChecked bool
+	TotalChecked     int
 }
 
 // IterateOption sets CurrentOpt and CurrentIndex appropriately so a multiselect option can be rendered individually
@@ -77,10 +80,10 @@ var MultiSelectQuestionTemplate = `
 {{end}}
 {{- if .ShowHelp }}{{- color .Config.Icons.Help.Format }}{{ .Config.Icons.Help.Text }} {{ .Help }}{{color "reset"}}{{"\n"}}{{end}}
 {{- color .Config.Icons.Question.Format }}{{ .Config.Icons.Question.Text }} {{color "reset"}}
-{{- color "default+hb"}}{{ .Message }}{{ .FilterMessage }}{{color "reset"}}
+{{- color "default+hb"}}{{ .Message }}{{- if .ShowTotalChecked}}{{color "default+hb"}} ({{.TotalChecked}} selected of {{len .Options}}) {{color "reset"}}{{end}}{{ .FilterMessage }}{{color "reset"}}
 {{- if .ShowAnswer}}{{color "cyan"}} {{.Answer}}{{color "reset"}}{{"\n"}}
 {{- else }}
-	{{- "  "}}{{- color "cyan"}}[Use arrows to move, space to select{{- if not .Config.RemoveSelectAll }}, <right> to all{{end}}{{- if not .Config.RemoveSelectNone }}, <left> to none{{end}}{{- if not .Config.DisableFilter}}, type to filter{{end}}{{- if and .Help (not .ShowHelp)}}, {{ .Config.HelpInput }} for more help{{end}}]{{color "reset"}}
+    {{- "  "}}{{- color "cyan"}}[Use arrows to move, space to select{{- if not .Config.RemoveSelectAll }}, <right> to all{{end}}{{- if not .Config.RemoveSelectNone }}, <left> to none{{end}}{{- if not .Config.DisableFilter}}, type to filter{{end}}{{- if and .Help (not .ShowHelp)}}, {{ .Config.HelpInput }} for more help{{end}}]{{color "reset"}}
   {{- "\n"}}
   {{- range $ix, $option := .PageEntries}}
     {{- template "option" $.IterateOption $ix $option}}
@@ -184,13 +187,15 @@ func (m *MultiSelect) OnChange(key rune, config *PromptConfig) {
 	opts, idx := paginate(pageSize, options, m.selectedIndex)
 
 	tmplData := MultiSelectTemplateData{
-		MultiSelect:   *m,
-		SelectedIndex: idx,
-		Checked:       m.checked,
-		ShowHelp:      m.showingHelp,
-		Description:   m.Description,
-		PageEntries:   opts,
-		Config:        config,
+		MultiSelect:      *m,
+		SelectedIndex:    idx,
+		Checked:          m.checked,
+		ShowHelp:         m.showingHelp,
+		Description:      m.Description,
+		PageEntries:      opts,
+		Config:           config,
+		ShowTotalChecked: m.ShowTotalChecked,
+		TotalChecked:     countChecked(m.checked),
 	}
 
 	// render the options
@@ -357,4 +362,14 @@ func (m *MultiSelect) Cleanup(config *PromptConfig, val interface{}) error {
 			Config:        config,
 		},
 	)
+}
+
+func countChecked(checked map[int]bool) int {
+	count := 0
+	for _, isChecked := range checked {
+		if isChecked {
+			count++
+		}
+	}
+	return count
 }
