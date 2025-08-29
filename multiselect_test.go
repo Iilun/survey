@@ -867,6 +867,35 @@ func TestMultiSelectPrompt(t *testing.T) {
 				{Value: "green", Index: 0},
 			},
 		},
+		{
+			"multi select with show total checked",
+			&MultiSelect{
+				Message:          "What colors do you prefer:",
+				Options:          []string{"red", "green", "blue", "yellow"},
+				ShowTotalChecked: true,
+			},
+			nil,
+			func(c expectConsole) {
+				c.ExpectString("What colors do you prefer: (0 selected of 4)  [Use arrows to move, space to select, <right> to all, <left> to none, type to filter]")
+				// Select "green"
+				c.Send(string(terminal.KeyArrowDown))
+				c.Send(" ")
+				c.ExpectString("What colors do you prefer: (1 selected of 4)  [Use arrows to move, space to select, <right> to all, <left> to none, type to filter]")
+				// Select "blue"
+				c.Send(string(terminal.KeyArrowDown))
+				c.Send(" ")
+				c.ExpectString("What colors do you prefer: (2 selected of 4)  [Use arrows to move, space to select, <right> to all, <left> to none, type to filter]")
+				// Deselect "green"
+				c.Send(string(terminal.KeyArrowUp))
+				c.Send(" ")
+				c.ExpectString("What colors do you prefer: (1 selected of 4)  [Use arrows to move, space to select, <right> to all, <left> to none, type to filter]")
+				c.SendLine("")
+				c.ExpectEOF()
+			},
+			[]core.OptionAnswer{
+				{Value: "blue", Index: 2},
+			},
+		},
 	}
 
 	for _, test := range tests {
